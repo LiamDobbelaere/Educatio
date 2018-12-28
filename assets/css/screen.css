@@ -1,0 +1,19 @@
+body {
+  font-family: 'Segoe UI Light', sans-serif;
+  background-color: #26262e;
+}
+
+#mindmap {
+  width: 1300px;
+  height: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 2px solid black;
+  background-color: #26262e;
+}
+
+/*
+.jsmind-inner {
+  overflow: hidden !important;
+}
+*/
