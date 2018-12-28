@@ -7,55 +7,19 @@ function addMindmapZooming() {
 
 function flatten(tree) {
   var values = [];
-  values.push(tree.id)
-  tree.children.forEach(function (child) {
-    flatten_child(child, values);
-  });
+  flattenChild(tree, values);
 
   return values;
 }
 
-function flatten_child(child, values) {
+function flattenChild(child, values) {
   values.push(child.id);
   if (child.children) {
     child.children.forEach(function (subchild) {
-      flatten_child(subchild, values);
+      flattenChild(subchild, values);
     });
   }
 }
-
-function hasNodeWithIdInTree(tree, id) {
-  tree.children.forEach(function(child) {
-    if (child.id === id) {
-      return true;
-    }
-
-    if (child.children) {
-      var result = hasNodeWithIdInTreeChild();    
-
-      if (result) return true;
-    }
-  });
-
-  return false;
-}
-
-function hasNodeWithIdInTreeChild(child) {
-  child.children.forEach(function(subchild) {
-    if (subchild.id === id) {
-      return true;
-    }
-
-    if (child.children) {
-      var result = hasNodeWithIdInTreeChild();
-      if (result) return true;
-    }
-  });
-
-  return false;
-}
-
-addMindmapZooming();
 
 var test = 
 `Geschiedenis neurowetenschap
