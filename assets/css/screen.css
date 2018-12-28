@@ -4,16 +4,15 @@ body {
 }
 
 #mindmap {
-  width: 1300px;
+  width: 1024px;
   height: 600px;
   margin-left: auto;
   margin-right: auto;
+  margin-top: 32px;
   border: 2px solid black;
   background-color: #26262e;
 }
 
-/*
 .jsmind-inner {
   overflow: hidden !important;
 }
-*/

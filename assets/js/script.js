@@ -5,6 +5,22 @@ function addMindmapZooming() {
   });
 }
 
+function scrollToElement(element){
+  var container = element.parentElement.parentElement;
+  var scrollTop = element.offsetTop - container.offsetHeight / 2;
+  var scrollLeft = element.offsetLeft - container.offsetWidth / 2;
+
+  if (element.offsetTop < container.scrollTop || element.offsetTop > container.scrollTop + container.offsetHeight / 2 || 
+    element.offsetLeft < container.scrollLeft || element.offsetLeft > container.scrollLeft + container.offsetWidth / 2)
+  {
+    $(container).animate({ scrollTop: scrollTop, scrollLeft: scrollLeft }, {
+      duration: 200,
+      queue: false,
+      easing: "linear"
+    });
+  }
+}
+
 function flatten(tree) {
   var values = [];
   flattenChild(tree, values);
@@ -13,10 +29,68 @@ function flatten(tree) {
 }
 
 function flattenChild(child, values) {
-  values.push(child.id);
+  values.push(child);
   if (child.children) {
     child.children.forEach(function (subchild) {
       flattenChild(subchild, values);
+    });
+  }
+}
+
+function Node(indented_line) {
+  var self = this;
+
+  this.children = [];
+  this.level = indented_line.length - indented_line.trimLeft().length;
+  this.text = indented_line.trim();
+  
+  //jsMind additions
+  this.id = this.text.split(' ').join('');
+  this.topic = this.text;
+
+  this.addChildren = function(nodes) {
+    var childlevel = nodes[0].level;
+
+    while (nodes.length > 0) {
+      var node = nodes.shift();
+      
+      if (node.level == childlevel) {
+        self.children.push(node);
+      } else if (node.level > childlevel) {
+        nodes.unshift(node);
+        self.children[self.children.length - 1].addChildren(nodes);
+      } else if (node.level <= self.level) {
+        nodes.unshift(node);
+
+        if (node.text == "") {
+          console.log(node);
+        }
+        return;
+      }
+    }
+  };
+}
+
+function plainTextToNodes(text) {
+  var nodes = text.split('\n').map(function(line) {
+    return new Node(line);
+  });
+  
+  var root = new Node("root");
+  root.addChildren(nodes);
+  root = root.children[0];
+  for (var i = 0; i < root.children.length; i++) {
+    root.children[i].direction = i <= root.children.length / 2 ? "left" : "right";
+  }
+
+  return JSON.parse(JSON.stringify(root));
+}
+
+function eraseTopics(root) {
+  root.topic = "_______";
+  if (root.children) {
+    root.children.forEach(function (child) {
+      eraseTopics(child);
     });
   }
 }
@@ -99,107 +173,72 @@ var test =
 		Gedragsgenetica (Watson en Crick)
 		Gedragspsychologie (Pavlov, Skinner, Chomsky)`;
 
-var testnodes = test.split('\n').map(function(text) {
-  return new Node(text);
-});
-
-var root = new Node("root");
-root.addChildren(testnodes);
-for (var i = 0; i < root.children[0].children.length; i++) {
-  root.children[0].children[i].direction = i <= root.children[0].children.length / 2 ? "left" : "right";
-}
-
-function Node(indented_line) {
-  var self = this;
-
-  this.children = [];
-  this.level = indented_line.length - indented_line.trimLeft().length;
-  this.text = indented_line.trim();
-  
-  //jsMind additions
-  this.id = this.text.split(' ').join('');
-  this.topic = this.text;
-
-  this.addChildren = function(nodes) {
-    var childlevel = nodes[0].level;
-
-    while (nodes.length > 0) {
-      var node = nodes.shift();
-      
-      if (node.level == childlevel) {
-        self.children.push(node);
-      } else if (node.level > childlevel) {
-        nodes.unshift(node);
-        self.children[self.children.length - 1].addChildren(nodes);
-      } else if (node.level <= self.level) {
-        nodes.unshift(node);
-
-        if (node.text == "") {
-          console.log(node);
-        }
-        return;
-      }
-    }
-  };
-}
-
-function scrollToElement(element){
-  var container = element.parentElement.parentElement;
-  var scrollTop = element.offsetTop - container.offsetHeight / 2;
-  var scrollLeft = element.offsetLeft - container.offsetWidth / 2;
-
-  if (element.offsetTop < container.scrollTop || element.offsetTop > container.scrollTop + container.offsetHeight / 2
-    || element.offsetLeft < container.scrollLeft || element.offsetLeft > container.scrollLeft + container.offsetWidth / 2)
-  {
-    $(container).animate({ scrollTop: scrollTop, scrollLeft: scrollLeft }, {
-      duration: 200,
-      queue: false,
-      easing: "linear"
-    });
-  }
-}
+var mindmapOriginal = plainTextToNodes(test);
+var mindmapBlind = plainTextToNodes(test);
+eraseTopics(mindmapBlind);
 
 var mind = {
   "meta": {
-    "name": "jsMind remote",
-    "author": "hizzgdev@163.com",
-    "version": "0.2"
+    "name": "",
+    "author": "",
+    "version": ""
   },
   "format": "node_tree",
-  "data": JSON.parse(JSON.stringify(root.children[0]))
+  "data": mindmapBlind,
+  
 };
+
 var options = {
   container:'mindmap',
   theme:'custom',
-  editable:true
+  editable:true,
+  view: {
+    line_width: 2,
+  }
 };
+
 var jm = new jsMind(options);
 jm.show(mind);
 jm.view.relayout();
 jm.view.minZoom = 0.1; 
-console.log(jm);
+var editTimeout = null;
+jm.update_node_handler = function(nodeid, topic, unchanged_or_empty) {
+  if (topic === flat[cid - 1].topic) {
+    console.log("correct");
+  }
 
-//Enable this for auto-collapse 1
-/*root.children[0].children.forEach(function (topNode) {
-  jm.collapse_node(topNode.id);
-});*/
+  if (unchanged_or_empty) {
+    console.log("Left blank!");
+  }
 
-var ids = flatten(mind.data);
+  console.log(topic);
+
+  advanceExercise();
+};
+
+var flat = flatten(mindmapOriginal);
 var cid = 0;
-setInterval(() => {
-  jm.select_node(ids[cid]);
+
+function advanceExercise() {
+  if (cid > 0) {
+    jm.update_node(flat[cid - 1].id, flat[cid - 1].topic);
+  }
+
+  var id = flat[cid].id;
+
+  jm.select_node(id);
+  clearTimeout(editTimeout);
+  editTimeout = setTimeout(function() {
+    jm.begin_edit(id);
+  }, 200);
+  
   scrollToElement(jm.get_selected_node()._data.view.element);
 
-  //Enable this for auto-collapse 2
-  /*
-  if (jm.get_selected_node().data.level === 1) {
-    root.children[0].children.forEach(function (topNode) {
-      jm.collapse_node(topNode.id);
-    });
-    
-    jm.expand_node(ids[cid]);
-  }*/
-
   cid++;
-  if (cid >= ids.length) cid = 0;
-}, 500);
+  if (cid > flat.length) cid = 0;
+}
+
+advanceExercise();
+advanceExercise();
+advanceExercise();
+advanceExercise();

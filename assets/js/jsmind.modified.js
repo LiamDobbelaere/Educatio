@@ -1418,7 +1418,9 @@
               return false;
           }
       },
-
+      update_node_handler: function(nodeid, topic, unchanged_or_empty) {
+          //jm.update_node_handler(nodeid, topic);
+      },
       update_node:function(nodeid, topic){
           if(this.get_editable()){
               if(jm.util.text.is_empty(topic)){
@@ -2455,8 +2457,11 @@
                   }else{
                       $t(element,node.topic);
                   }
+
+                  this.jm.update_node_handler(node.id, topic, true);
               }else{
                   this.jm.update_node(node.id,topic);
+                  this.jm.update_node_handler(node.id, topic, false);
               }
           }
       },
