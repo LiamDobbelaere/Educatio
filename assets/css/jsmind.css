@@ -46,7 +46,7 @@ jmnodes.theme-custom jmnode {
 	transition: transform 0.1s ease;
 	box-shadow: none;
     color: #9fd114;
-    background-color: #26262e;
+    background-color: #17171c;
 }
 
 jmnodes.theme-custom jmnode:hover {
@@ -65,8 +65,8 @@ jmnodes.theme-custom jmnode.root{
 }
 
 jmnodes.theme-custom jmexpander{
-    border: 1px solid #9fd114;
-    color: #9fd114;
+    border: 1px solid #aaa;
+    color: #aaa;
 }
 
 jmnodes.theme-custom jmexpander:hover{

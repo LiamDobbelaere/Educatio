@@ -10,9 +10,18 @@ body {
   margin-right: auto;
   margin-top: 32px;
   border: 2px solid black;
-  background-color: #26262e;
+  background-color: #17171c;
 }
 
 .jsmind-inner {
   overflow: hidden !important;
+}
+
+p::-moz-selection { color: red}
+p::selection { color: red; }
+
+input.jsmind-editor {
+  background: none;
+  border: none;
+  color: white;
 }

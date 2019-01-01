@@ -18,7 +18,7 @@
 
   // an noop function define
   var _noop = function(){};
-  var logger = (typeof console === 'undefined')?{
+  var logger = (typeof console === 'undefined' || true)?{
           log:_noop, debug:_noop, error:_noop, warn:_noop, info:_noop
       }:console;
 
@@ -68,8 +68,8 @@
       },
       default_event_handle:{
           enable_mousedown_handle:true,
-          enable_click_handle:true,
-          enable_dblclick_handle:true
+          enable_click_handle:false,
+          enable_dblclick_handle:false
       },
       shortcut:{
           enable:true,
@@ -2776,7 +2776,7 @@
           }
       },
       handle_addbrother:function(_jm,e){
-          var selected_node = _jm.get_selected_node();
+          /*var selected_node = _jm.get_selected_node();
           if(!!selected_node && !selected_node.isroot){
               var nodeid = jm.util.uuid.newid();
               var node = _jm.insert_node_after(selected_node, nodeid, 'New Node');
@@ -2784,7 +2784,7 @@
                   _jm.select_node(nodeid);
                   _jm.begin_edit(nodeid);
               }
-          }
+          }*/
       },
       handle_editnode:function(_jm,e){
           var selected_node = _jm.get_selected_node();
